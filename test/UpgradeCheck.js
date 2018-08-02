@@ -76,7 +76,7 @@ contract('UpgradeCheck', function (accounts) {
         }
     })
 
-    it('should only upgrade if upgradeTo(address) functions exist', async function() {
+    it('should only upgrade if upgradeTo(address) and transferOwnership(address) functions exist', async function() {
         try {
             await safeProxy.upgradeTo(upgradeCheckV2b_CannotUpgrade.address)
             throw new Error("This error should not happen")

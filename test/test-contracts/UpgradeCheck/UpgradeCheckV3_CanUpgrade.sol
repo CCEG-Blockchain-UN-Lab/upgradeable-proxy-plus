@@ -15,4 +15,6 @@ contract UpgradeCheckV3_CanUpgrade {
 
     function upgradeTo(address) public {}
     function initialize() public {}
+
+    function transferOwnership(address) public {}
 }

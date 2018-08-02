@@ -10,8 +10,8 @@ contract ProxyPlus is OwnableProxied {
     }
 
     function upgradeTo(address _target) public onlyOwner{
-        assert(target != _target);
-        assert(isContract(_target));
+        assert(target != address(_target));
+        assert(isContract(address(_target)));
         assert(isUpgradeable(_target));
 
         address oldTarget = target;
@@ -22,7 +22,7 @@ contract ProxyPlus is OwnableProxied {
 
     function upgradeTo(address _target, bytes _data) public onlyOwner{
         upgradeTo(_target);
-        assert(target.delegatecall(_data));
+        assert(address(target).delegatecall(_data));
     }
 
     function () payable public {
@@ -59,7 +59,8 @@ contract ProxyPlus is OwnableProxied {
      * @returns true if the target address implements the upgradeTo() function
      */
     function isUpgradeable(address _target) internal view returns (bool) {
-        return UpgradeablePlus(_target).call(bytes4(keccak256("upgradeTo(address)")), address(this));
+        return (UpgradeablePlus(_target).call(bytes4(keccak256("upgradeTo(address)")), address(this)) &&
+        UpgradeablePlus(_target).call(bytes4(keccak256("transferOwnership(address)")), owner));
     }
 
 }

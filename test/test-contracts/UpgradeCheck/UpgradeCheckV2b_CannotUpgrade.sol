@@ -14,4 +14,5 @@ contract UpgradeCheckV2b_CannotUpgrade {
     }
 
     function upgradeTo() public {}
+    function transferOwnership(address) public {}
 }
