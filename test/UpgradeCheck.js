@@ -1,4 +1,4 @@
-const SafeProxy = artifacts.require('SafeProxy')
+const SafeProxy = artifacts.require('ProxyPlus')
 const UpgradeCheck_CanUpgrade = artifacts.require('UpgradeCheck_CanUpgrade')
 const UpgradeCheck_CannotUpgrade = artifacts.require('UpgradeCheck_CannotUpgrade')
 const UpgradeCheckV2_CanUpgrade = artifacts.require('UpgradeCheckV2_CanUpgrade')
