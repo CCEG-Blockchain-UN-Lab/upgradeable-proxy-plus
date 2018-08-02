@@ -1,7 +1,26 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.18;
+import "upgradeable-proxy/contracts/ownable/OwnableUpgradeable.sol";
 
-import "upgradeable-proxy/contracts/safe/SafeUpgradeable.sol";
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+contract UpgradeablePlus is OwnableUpgradeable {
+    /*
+     * @notice Sets the target variable to be the address of the contract.
+     * @dev This is checked during SafeProxy.upgradeTo() to check that the contract that inherits from
+     * Upgradeable is meant to be an upgradeable conract.
+     * Do not remove or change this functionality without adequate changese to SafeProxy.isUpgradeable()
+     */
+    constructor() public {
+        target = address(this);
+    }
 
-contract UpgradeablePlus is SafeUpgradeable, Ownable{
+    /**
+     * @notice Will always succeed if called.
+     * @dev It is called during SafeProxy.upgradeTo() to check that the contract that inherits from
+     * Upgradeable is meant to be an upgradeable contract.
+     *
+     * Do not remove or change this function, or override in inherited child contract, without
+     * adequate changes to Proxy.isUpgradeable()
+     */
+    function upgradeTo(address) public {
+        assert(true); // this is used by SafeProxy.isUpgradeable()
+    }
 }
