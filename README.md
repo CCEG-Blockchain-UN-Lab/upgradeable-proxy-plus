@@ -40,6 +40,9 @@ let uintSimpleV1byProxy = UintSimpleV1.at(proxy.address);
 await uintSimpleV1byProxy.initialize();
 ```
 
+Where Proxy artifact is read with [this strategy](https://github.com/CCEG-Blockchain-UN-Lab/upgradeable-proxy-plus/blob/master/test/UnitSimple.js#L01
+).
+
 ### Contract interaction
 To interact with the upgradeable contract, then simply call the contract methods like [test](https://github.com/CCEG-Blockchain-UN-Lab/upgradeable-proxy-plus/blob/master/test/UnitSimple.js#L25
 ) indicates.

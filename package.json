@@ -1,6 +1,6 @@
 {
   "name": "upgradeable-proxy-plus",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Extends https://github.com/CCEG-Blockchain-UN-Lab/upgradeable-proxy with Ownable super contract and utilizing safe policies for the upgrade mechanism.",
   "main": "truffle.js",
   "directories": {
