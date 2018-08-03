@@ -5,12 +5,20 @@ Based on upgradeable-proxy. More info [here](https://github.com/CCEG-Blockchain-
 
 - Implements both upgradeable-proxy features at same time:
   - Upgrade safety and protection
-    - Experimental safety features were implemented to the upgradeable pattern to protect the contract from being accidentally or maliciousl upgraded to the wrong contract. A target contract for the SafeProxy must satisfy, at a minimum, the following conditions to be able to call Proxy.upgradeTo() to change the target:
+    - Experimental safety features[*](#note) were implemented to the upgradeable pattern to protect the contract from being accidentally or maliciousl upgraded to the wrong contract. A target contract for the SafeProxy must satisfy, at a minimum, the following conditions to be able to call Proxy.upgradeTo() to change the target:
+      1. Must have a address target variable
+      2. Must have a upgradeTo(address) public function
+      3. Must have a transferOwnership(address) public function
   - Permissioned (Ownable) proxy upgrade
     - Ownable to allow the administrator of the proxy to be set as a multisig or DAO-like contract to provide distributed governance.     
 - Inherits from upgradeable-proxy
   - 100% Upgradeable strategy
   - Comprehensive test suite
+
+### Note:
+- empty functions that do nothing will satisfy these conditions.
+- one of the safety features depends on the use of the EXTCODESIZE opcode which may not work after the Serenity hard fork.
+- carefully consider if these safety features are necessary, onced deployed they cannot be changed.
 
 ## Instalation
 ```bash
