@@ -2,10 +2,14 @@ pragma solidity ^0.4.18;
 
 import './UpgradeablePlus.sol';
 import "upgradeable-proxy/contracts/ownable/OwnableProxied.sol";
+import "upgradeable-proxy/contracts/Proxy.sol";
+import "upgradeable-proxy/contracts/CheckContract.sol";
 
 contract ProxyPlus is OwnableProxied {
 
-    constructor(address _target) public {
+    address checkContract;
+    constructor(address _target, address _checkContractProxy) public {
+        checkContract = CheckContract(_checkContractProxy);
         upgradeTo(_target);
     }
 
@@ -48,9 +52,7 @@ contract ProxyPlus is OwnableProxied {
      * @return true if the target is a contract
      */
     function isContract(address _target) internal view returns (bool) {
-        uint256 size;
-        assembly { size := extcodesize(_target) } // Note: the EXTCODESIZE may not work after Serenity hard fork
-        return size > 0;
+        return CheckContract(checkContract).call(bytes4(keccak256("isContract(address)")), _target);
     }
 
     /*

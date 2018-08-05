@@ -1,8 +1,9 @@
+pragma experimental ABIEncoderV2;
 pragma solidity ^0.4.18;
 
-contract UpgradeCheckV2b_CannotUpgrade {
-    address target;
-    mapping (address => bool) initialized;
+import "../../../contracts/UpgradeablePlus.sol";
+
+contract UintAdvancedV1Safe is UpgradeablePlus {
     uint value;
 
     function getValue() view public returns (uint) {
@@ -10,8 +11,6 @@ contract UpgradeCheckV2b_CannotUpgrade {
     }
 
     function setValue(uint _value) public {
-        value = 2*_value;
+        value = _value;
     }
-
-    function upgradeTo() public {}
 }
