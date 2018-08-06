@@ -62,9 +62,9 @@ let testTwo = await checkContractInstanceByProxy.isContract.call(
 assert.equal(testTwo, false);
 ```
 
-###Deploy the UpgradeablePlus contract
+### Deploy the UpgradeablePlus contract
 ```javascript
-    let addressSimpleV1 = await deployer.deploy(AddressSimpleV1);
+let addressSimpleV1 = await deployer.deploy(AddressSimpleV1);
 ```
 
 ### Deploy AddressSimpleV1's ProxyPlus
