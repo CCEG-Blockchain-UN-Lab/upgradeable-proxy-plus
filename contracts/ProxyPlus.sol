@@ -1,13 +1,11 @@
 pragma solidity ^0.4.18;
 
 import './UpgradeablePlus.sol';
-import "upgradeable-proxy/contracts/ownable/OwnableProxied.sol";
-import "upgradeable-proxy/contracts/Proxy.sol";
+import "./ProxiedPlus.sol";
 import "upgradeable-proxy/contracts/CheckContract.sol";
 
-contract ProxyPlus is OwnableProxied {
+contract ProxyPlus is ProxiedPlus {
 
-    address checkContract;
     constructor(address _target, address _checkContractProxy) public {
         checkContract = CheckContract(_checkContractProxy);
         upgradeTo(_target);

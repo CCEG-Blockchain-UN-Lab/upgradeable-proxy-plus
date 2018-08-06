@@ -1,4 +1,6 @@
-const deployOwnableContractAndProxyFor = require("./helpers/deployOwnableContractAndProxyFor");
+const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
+const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
+const CheckContract = artifacts.require("CheckContract");
 const UintOwnableV1 = artifacts.require("UintOwnableV1");
 const UintOwnableV2 = artifacts.require("UintOwnableV2");
 
@@ -10,10 +12,21 @@ contract("UintOwnable", function(accounts) {
   beforeEach(async function() {
     let result = await Promise.all([
       UintOwnableV2.new(),
-      deployOwnableContractAndProxyFor(UintOwnableV1).then(async cnp => {
-        uintOwnableV1 = cnp.contract;
-        uintOwnableV1byProxy = cnp.proxied;
-        await uintOwnableV1byProxy.initialize();
+      // deployOwnableContractAndProxyFor(UintOwnableV1).then(async cnp => {
+      //   uintOwnableV1 = cnp.contract;
+      //   uintOwnableV1byProxy = cnp.proxied;
+      //   await uintOwnableV1byProxy.initialize();
+      // })
+      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
+        let checkContractInstanceByProxyAddress = ci.proxied.address;
+        await deployContractAndSafeProxyFor(
+          checkContractInstanceByProxyAddress,
+          UintOwnableV1
+        ).then(async cnp => {
+          uintOwnableV1 = cnp.contract;
+          uintOwnableV1byProxy = cnp.proxied;
+          await uintOwnableV1byProxy.initialize();
+        });
       })
     ]);
     uintOwnableV2 = result[0];
