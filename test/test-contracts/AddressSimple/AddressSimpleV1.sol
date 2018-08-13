@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract AddressSimpleV1Safe is UpgradeablePlus {
+contract AddressSimpleV1 {
     address value;
 
     function getValue() view public returns (address) {

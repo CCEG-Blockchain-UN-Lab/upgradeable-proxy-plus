@@ -1,13 +1,8 @@
 const genericDeployContractAndSafeProxyFor = require("./genericDeployContractAndSafeProxyFor");
 
-module.exports = async (
-  checkContractInstanceByProxyAddress,
-  contract,
-  args
-) => {
+module.exports = async (contract, args) => {
   return genericDeployContractAndSafeProxyFor(
-    "ProxyPlus",
-    checkContractInstanceByProxyAddress,
+    "OwnedUpgradeabilityProxy",
     contract,
     args
   );
