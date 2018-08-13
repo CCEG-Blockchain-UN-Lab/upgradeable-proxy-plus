@@ -11,7 +11,7 @@ contract("AddressSimple", function(accounts) {
   beforeEach(async function() {
     let result = await Promise.all([
       AddressSimpleV2.new(),
-      await deployContractAndSafeProxyFor(AddressSimpleV1).then(async cnp => {
+      deployContractAndSafeProxyFor(AddressSimpleV1).then(async cnp => {
         this.proxy = cnp.proxy;
         this.proxied = cnp.proxied;
       })

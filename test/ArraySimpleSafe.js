@@ -29,7 +29,7 @@ contract("ArraySimple", function(accounts) {
       ArraySimpleV2a.new(),
       ArraySimpleV2a_ExtraValue.new(),
       ArraySimpleV2b.new(),
-      await deployContractAndSafeProxyFor(ArraySimpleV1a).then(async cnp => {
+      deployContractAndSafeProxyFor(ArraySimpleV1a).then(async cnp => {
         this.proxy = cnp.proxy;
         this.proxied = cnp.proxied;
         arraySimpleV1a = cnp.contract;

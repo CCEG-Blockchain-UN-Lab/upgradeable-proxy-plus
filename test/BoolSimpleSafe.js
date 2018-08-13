@@ -1,42 +1,35 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const BoolSimpleV1 = artifacts.require("BoolSimpleV1Safe");
-const BoolSimpleV2 = artifacts.require("BoolSimpleV2Safe");
+const BoolSimpleV1 = artifacts.require("BoolSimpleV1");
+const BoolSimpleV2 = artifacts.require("BoolSimpleV2");
 
-contract("BoolSimpleSafe", function(accounts) {
-  let boolSimpleV2, boolSimpleV1byProxy;
+contract("BoolSimple", function(accounts) {
+  let boolSimpleV2;
 
   beforeEach(async function() {
     let result = await Promise.all([
       BoolSimpleV2.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          BoolSimpleV1
-        ).then(async cnp => {
-          boolSimpleV1byProxy = cnp.proxied;
-          await boolSimpleV1byProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(BoolSimpleV1).then(async cnp => {
+        this.proxied = cnp.proxied;
+        this.proxy = cnp.proxy;
+        // await this.proxied.initialize();
       })
     ]);
     boolSimpleV2 = result[0];
   });
 
-  it("should be able to upgrade to new bool function", async function() {
-    await boolSimpleV1byProxy.setValue(true);
-    let value = await boolSimpleV1byProxy.getValue.call();
+  it.only("should be able to upgrade to new bool function", async function() {
+    await this.proxied.setValue(true);
+    let value = await this.proxied.getValue.call();
     assert.equal(value, true, "Not equal to true");
 
-    await boolSimpleV1byProxy.upgradeTo(boolSimpleV2.address);
-    await boolSimpleV1byProxy.initialize();
+    await this.proxy.upgradeTo(boolSimpleV2.address);
+    // await this.proxied.initialize();
 
-    value = await boolSimpleV1byProxy.getValue.call();
+    value = await this.proxied.getValue.call();
     assert.equal(value, true, "Not equal to true");
 
-    await boolSimpleV1byProxy.setValue(true);
-    value = await boolSimpleV1byProxy.getValue.call();
+    await this.proxied.setValue(true);
+    value = await this.proxied.getValue.call();
     assert.equal(value, false, "Not equal to false");
   });
 });

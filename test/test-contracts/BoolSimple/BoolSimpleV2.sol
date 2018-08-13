@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract BoolSimpleV2Safe is UpgradeablePlus {
+contract BoolSimpleV2 {
     bool value;
 
     function getValue() view public returns (bool) {
