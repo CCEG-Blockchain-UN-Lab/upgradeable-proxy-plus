@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract ArraySimpleV2bSafe is UpgradeablePlus {
+contract ArraySimpleV1b {
     uint[] values;
     uint anotherValue;
 
@@ -11,6 +9,6 @@ contract ArraySimpleV2bSafe is UpgradeablePlus {
     }
 
     function setValues(uint[] _values) public {
-        values = [1, 2, 3];
+        values = _values;
     }
 }
