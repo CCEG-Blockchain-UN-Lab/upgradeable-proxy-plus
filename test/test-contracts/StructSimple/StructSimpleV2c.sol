@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract StructSimpleV2cSafe is UpgradeablePlus {
+contract StructSimpleV2c {
     struct MyStruct {
         bool sBool;
         uint sUint;

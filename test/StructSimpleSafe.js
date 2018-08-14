@@ -1,14 +1,12 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const StructSimpleV1 = artifacts.require("StructSimpleV1Safe");
-const StructSimpleV2 = artifacts.require("StructSimpleV2Safe");
-const StructSimpleV2b = artifacts.require("StructSimpleV2bSafe");
-const StructSimpleV2c = artifacts.require("StructSimpleV2cSafe");
+const StructSimpleV1 = artifacts.require("StructSimpleV1");
+const StructSimpleV2 = artifacts.require("StructSimpleV2");
+const StructSimpleV2b = artifacts.require("StructSimpleV2b");
+const StructSimpleV2c = artifacts.require("StructSimpleV2c");
 
 const INDENT = "      ";
 
-contract("StructSimpleSafe", function(accounts) {
+contract("StructSimple", function(accounts) {
   let proxy,
     structSimpleV2,
     structSimpleV2b,
@@ -21,17 +19,11 @@ contract("StructSimpleSafe", function(accounts) {
       StructSimpleV2.new(),
       StructSimpleV2b.new(),
       StructSimpleV2c.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          StructSimpleV1
-        ).then(async cnp => {
-          proxy = cnp.proxy;
-          structSimpleV1byProxy = cnp.proxied;
-          structSimpleV2bbyProxy = StructSimpleV2b.at(proxy.address);
-          await structSimpleV1byProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(StructSimpleV1).then(async cnp => {
+        proxy = cnp.proxy;
+        structSimpleV1byProxy = cnp.proxied;
+        structSimpleV2bbyProxy = StructSimpleV2b.at(proxy.address);
+        // await structSimpleV1byProxy.initialize();
       })
     ]);
     structSimpleV2 = result[0];
@@ -56,8 +48,8 @@ contract("StructSimpleSafe", function(accounts) {
       "Not equal to that supplied"
     );
 
-    await structSimpleV1byProxy.upgradeTo(structSimpleV2.address);
-    await structSimpleV1byProxy.initialize();
+    await proxy.upgradeTo(structSimpleV2.address);
+    // await structSimpleV1byProxy.initialize();
 
     value = await structSimpleV1byProxy.getValue.call();
     assert.deepEqual(
@@ -84,8 +76,8 @@ contract("StructSimpleSafe", function(accounts) {
       "Not equal to that supplied"
     );
 
-    await structSimpleV1byProxy.upgradeTo(structSimpleV2b.address);
-    await structSimpleV1byProxy.initialize();
+    await proxy.upgradeTo(structSimpleV2b.address);
+    // await structSimpleV1byProxy.initialize();
 
     value = await structSimpleV2bbyProxy.getValue.call();
     assert.deepEqual(
@@ -128,8 +120,8 @@ contract("StructSimpleSafe", function(accounts) {
       "Not equal to that supplied"
     );
 
-    await structSimpleV1byProxy.upgradeTo(structSimpleV2c.address);
-    await structSimpleV1byProxy.initialize();
+    await proxy.upgradeTo(structSimpleV2c.address);
+    // await structSimpleV1byProxy.initialize();
 
     value = await structSimpleV1byProxy.getValue.call();
     assert.notDeepEqual(

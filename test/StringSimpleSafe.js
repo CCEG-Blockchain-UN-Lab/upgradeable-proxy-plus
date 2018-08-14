@@ -1,5 +1,4 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
 const StringSimpleV1 = artifacts.require("StringSimpleV1");
 const StringSimpleV2 = artifacts.require("StringSimpleV2");
 
@@ -21,7 +20,7 @@ contract("StringSimpleSafe", function(accounts) {
     stringSimpleV2 = result[0];
   });
 
-  it.only("should be able to upgrade to new string function", async function() {
+  it("should be able to upgrade to new string function", async function() {
     await stringSimpleV1byProxy.setValue(inputValue);
     let value = await stringSimpleV1byProxy.getValue.call();
     assert.equal(value, inputValue, "Not equal to inptValue");
