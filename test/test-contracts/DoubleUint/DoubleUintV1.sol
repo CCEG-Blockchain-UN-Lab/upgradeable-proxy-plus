@@ -1,10 +1,8 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract DoubleUintV2a_NewStorageSafe is UpgradeablePlus {
-    uint value2;
+contract DoubleUintV1 {
     uint value;
+    uint value2;
 
     function getValue() view public returns (uint) {
         return value;

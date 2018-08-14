@@ -1,5 +1,4 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
 const ChangeType_Uint = artifacts.require("ChangeType_Uint");
 const ChangeType_Uint8 = artifacts.require("ChangeType_Uint8");
 const ChangeType_Bool = artifacts.require("ChangeType_Bool");
