@@ -9,9 +9,11 @@ import './Proxy.sol';
 contract UpgradeabilityProxy is Proxy {
   /**
    * @dev This event will be emitted every time the implementation gets upgraded
-   * @param implementation representing the address of the upgraded implementation
+   * @param newImplementation representing the address of the upgraded implementation
+   * @param oldImplementation representing the address of the old implementation
+   * @param admin representing the address of msg sender of the upgrade transaction
    */
-  event Upgraded(address indexed implementation);
+  event Upgraded(address indexed newImplementation, address indexed oldImplementation, address indexed admin);
 
   // Storage position of the address of the current implementation
   bytes32 private constant implementationPosition = keccak256("org.zeppelinos.proxy.implementation");
@@ -51,6 +53,6 @@ contract UpgradeabilityProxy is Proxy {
     address currentImplementation = implementation();
     require(currentImplementation != newImplementation);
     setImplementation(newImplementation);
-    emit Upgraded(newImplementation);
+    emit Upgraded(newImplementation, currentImplementation, msg.sender);
   }
 }

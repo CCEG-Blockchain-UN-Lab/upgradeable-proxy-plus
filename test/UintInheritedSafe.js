@@ -1,12 +1,10 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const UintInheritedV1 = artifacts.require("UintInheritedV1Safe");
-const UintInheritedV2 = artifacts.require("UintInheritedV2Safe");
+const UintInheritedV1 = artifacts.require("UintInheritedV1");
+const UintInheritedV2 = artifacts.require("UintInheritedV2");
 
 const INDENT = "      ";
 
-contract("UintInheritedSafe", function(accounts) {
+contract("UintInherited", function(accounts) {
   let uintInheritedV1, uintInheritedV2, uintInheritedV1byProxy;
 
   const inputValue = 10;
@@ -14,16 +12,10 @@ contract("UintInheritedSafe", function(accounts) {
   beforeEach(async function() {
     let result = await Promise.all([
       UintInheritedV2.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          UintInheritedV1
-        ).then(async cnp => {
-          uintInheritedV1byProxy = cnp.proxied;
-          uintInheritedV1 = cnp.contract;
-          await uintInheritedV1byProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(UintInheritedV1).then(async cnp => {
+        uintInheritedV1byProxy = cnp.proxied;
+        uintInheritedV1 = cnp.contract;
+        this.proxy = cnp.proxy;
       })
     ]);
     uintInheritedV2 = result[0];
@@ -35,8 +27,7 @@ contract("UintInheritedSafe", function(accounts) {
     let value = bigNumValue.toNumber();
     assert.equal(inputValue, value, "The two values should be the same");
 
-    await uintInheritedV1byProxy.upgradeTo(uintInheritedV2.address);
-    await uintInheritedV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintInheritedV2.address);
 
     bigNumValue = await uintInheritedV1byProxy.getValue.call();
     value = bigNumValue.toNumber();
@@ -53,22 +44,21 @@ contract("UintInheritedSafe", function(accounts) {
   });
 
   it("should emit EventUpgrade on upgrade", async function() {
-    let tx = await uintInheritedV1byProxy.upgradeTo(uintInheritedV2.address);
-    await uintInheritedV1byProxy.initialize();
+    let tx = await this.proxy.upgradeTo(uintInheritedV2.address);
 
     let upgradeLog = tx.logs[0];
     assert.equal(
       upgradeLog.event,
-      "EventUpgrade",
+      "Upgraded",
       "First log should be EventUpgrade"
     );
     assert.equal(
-      upgradeLog.args.oldTarget,
+      upgradeLog.args.oldImplementation,
       uintInheritedV1.address,
       "The old target should be the deployed UintInheritedV1 address"
     );
     assert.equal(
-      upgradeLog.args.newTarget,
+      upgradeLog.args.newImplementation,
       uintInheritedV2.address,
       "The new target should be the deployed UintInheritedV2 address"
     );
@@ -86,8 +76,7 @@ contract("UintInheritedSafe", function(accounts) {
     tx = await uintInheritedV1byProxy.setValue(inputValue);
     gasCosts[1] = tx.receipt.gasUsed;
 
-    await uintInheritedV1byProxy.upgradeTo(uintInheritedV2.address);
-    await uintInheritedV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintInheritedV2.address);
 
     tx = await uintInheritedV2.setValue(inputValue);
     gasCosts[2] = tx.receipt.gasUsed;
