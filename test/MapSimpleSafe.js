@@ -1,12 +1,10 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const MapSimpleV1 = artifacts.require("MapSimpleV1Safe");
-const MapSimpleV2 = artifacts.require("MapSimpleV2Safe");
-const MapSimpleV2b = artifacts.require("MapSimpleV2bSafe");
-const MapSimpleV2c = artifacts.require("MapSimpleV2cSafe");
+const MapSimpleV1 = artifacts.require("MapSimpleV1");
+const MapSimpleV2 = artifacts.require("MapSimpleV2");
+const MapSimpleV2b = artifacts.require("MapSimpleV2b");
+const MapSimpleV2c = artifacts.require("MapSimpleV2c");
 
-contract("MapSimpleSafe", function(accounts) {
+contract("MapSimple", function(accounts) {
   let proxy,
     mapSimpleV2,
     mapSimpleV2b,
@@ -20,18 +18,12 @@ contract("MapSimpleSafe", function(accounts) {
       MapSimpleV2.new(),
       MapSimpleV2b.new(),
       MapSimpleV2c.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          MapSimpleV1
-        ).then(async cnp => {
-          proxy = cnp.proxy;
-          mapSimpleV1byProxy = cnp.proxied;
-          mapSimpleV2bbyProxy = MapSimpleV2b.at(proxy.address);
-          mapSimpleV2cbyProxy = MapSimpleV2c.at(proxy.address);
-          await mapSimpleV1byProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(MapSimpleV1).then(async cnp => {
+        proxy = cnp.proxy;
+        mapSimpleV1byProxy = cnp.proxied;
+        mapSimpleV2bbyProxy = MapSimpleV2b.at(proxy.address);
+        mapSimpleV2cbyProxy = MapSimpleV2c.at(proxy.address);
+        // await mapSimpleV1byProxy.initialize();
       })
     ]);
     mapSimpleV2 = result[0];
@@ -44,8 +36,8 @@ contract("MapSimpleSafe", function(accounts) {
     let value = await mapSimpleV1byProxy.getValue.call(0);
     assert.equal(value, true, "Not equal to true");
 
-    await mapSimpleV1byProxy.upgradeTo(mapSimpleV2.address);
-    await mapSimpleV1byProxy.initialize();
+    await proxy.upgradeTo(mapSimpleV2.address);
+    // await mapSimpleV1byProxy.initialize();
 
     value = await mapSimpleV1byProxy.getValue.call(0);
     assert.equal(value, true, "Not equal to true");
@@ -60,8 +52,8 @@ contract("MapSimpleSafe", function(accounts) {
     let value = await mapSimpleV1byProxy.getValue.call(0);
     assert.equal(value, true, "Not equal to true");
 
-    await mapSimpleV1byProxy.upgradeTo(mapSimpleV2b.address);
-    await mapSimpleV1byProxy.initialize();
+    await proxy.upgradeTo(mapSimpleV2b.address);
+    // await mapSimpleV1byProxy.initialize();
 
     value = await mapSimpleV2bbyProxy.getValue.call(0);
     assert.equal(value, true, "Not equal to true");
@@ -87,8 +79,8 @@ contract("MapSimpleSafe", function(accounts) {
     let value = await mapSimpleV1byProxy.getValue.call(0);
     assert.equal(value, true, "Not equal to true");
 
-    await mapSimpleV1byProxy.upgradeTo(mapSimpleV2c.address);
-    await mapSimpleV1byProxy.initialize();
+    await proxy.upgradeTo(mapSimpleV2c.address);
+    // await mapSimpleV1byProxy.initialize();
 
     value = await mapSimpleV2cbyProxy.getValue.call(0);
     assert.equal(value.toNumber(), true, "Not equal to 1");

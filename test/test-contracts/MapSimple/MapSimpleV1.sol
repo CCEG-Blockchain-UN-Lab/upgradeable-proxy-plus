@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract MapSimpleV1Safe is UpgradeablePlus {
+contract MapSimpleV1 {
     mapping (uint => bool) values;
 
     function getValue(uint _index) view public returns (bool) {

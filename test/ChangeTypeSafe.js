@@ -14,7 +14,7 @@ const UINT8_MAX = web3
   .pow(8)
   .minus(1);
 
-contract("ChangeTypeSafe", function(accounts) {
+contract("ChangeType", function(accounts) {
   let proxy,
     changeType_Uint8,
     changeType_Bool,
