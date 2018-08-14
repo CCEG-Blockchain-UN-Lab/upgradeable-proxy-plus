@@ -1,15 +1,14 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
 const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const UintEventV1 = artifacts.require("UintEventV1Safe");
+const UintEventV1 = artifacts.require("UintEventV1");
 const UintEventV2a_RemovedEvent = artifacts.require(
-  "UintEventV2a_RemovedEventSafe"
+  "UintEventV2a_RemovedEvent"
 );
 const UintEventV2b_EventReordered = artifacts.require(
-  "UintEventV2b_EventReorderedSafe"
+  "UintEventV2b_EventReordered"
 );
 
-contract("UintEventSafe", function(accounts) {
+contract("UintEvent", function(accounts) {
   let uintEventV2a_RemovedEvent,
     uintEventV2b_EventReordered,
     uintEventV1byProxy;
@@ -20,15 +19,10 @@ contract("UintEventSafe", function(accounts) {
     let result = await Promise.all([
       UintEventV2a_RemovedEvent.new(),
       UintEventV2b_EventReordered.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          UintEventV1
-        ).then(async cnp => {
-          uintEventV1byProxy = cnp.proxied;
-          await uintEventV1byProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(UintEventV1).then(async cnp => {
+        uintEventV1byProxy = cnp.proxied;
+        this.proxy = cnp.proxy;
+        // await uintEventV1byProxy.initialize();
       })
     ]);
     uintEventV2a_RemovedEvent = result[0];
@@ -49,8 +43,8 @@ contract("UintEventSafe", function(accounts) {
       "The new value should be inputValue"
     );
 
-    await uintEventV1byProxy.upgradeTo(uintEventV2a_RemovedEvent.address);
-    await uintEventV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintEventV2a_RemovedEvent.address);
+    // await uintEventV1byProxy.initialize();
 
     tx = await uintEventV1byProxy.setValue(inputValue);
     valueChangedLog = tx.logs[0];
@@ -75,8 +69,8 @@ contract("UintEventSafe", function(accounts) {
       "The new value should be inputValue"
     );
 
-    await uintEventV1byProxy.upgradeTo(uintEventV2b_EventReordered.address);
-    await uintEventV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintEventV2b_EventReordered.address);
+    // await uintEventV1byProxy.initialize();
 
     tx = await uintEventV1byProxy.setValue(inputValue);
     valueChangedLog = tx.logs[0];

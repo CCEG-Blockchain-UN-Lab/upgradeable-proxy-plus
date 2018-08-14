@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintEventV1Safe is UpgradeablePlus {
+contract UintEventV1{
     uint value;
     event EventValueChanged(uint newValue);
     event EventValueChanged2(uint newValue2);

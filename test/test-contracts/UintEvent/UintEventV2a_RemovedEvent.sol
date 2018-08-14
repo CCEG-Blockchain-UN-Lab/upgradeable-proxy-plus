@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintEventV2a_RemovedEventSafe is UpgradeablePlus {
+contract UintEventV2a_RemovedEvent{
     uint value;
 
     function getValue() view public returns (uint) {
