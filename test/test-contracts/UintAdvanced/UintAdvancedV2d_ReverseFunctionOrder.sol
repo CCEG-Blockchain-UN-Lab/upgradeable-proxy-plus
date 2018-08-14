@@ -1,9 +1,7 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintAdvancedV2d_ReverseFunctionOrderSafe is UpgradeablePlus {
+contract UintAdvancedV2d_ReverseFunctionOrder{
     uint value;
 
     function setValue(uint _value) public {

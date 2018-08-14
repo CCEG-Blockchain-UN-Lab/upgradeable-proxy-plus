@@ -1,9 +1,7 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintAdvancedV2f_NewStorageSafe is UpgradeablePlus {
+contract UintAdvancedV2b_NewStorage{
     uint value;
     uint value2;
 
@@ -12,10 +10,10 @@ contract UintAdvancedV2f_NewStorageSafe is UpgradeablePlus {
     }
 
     function setValue(uint _value) public {
-        value = _value;
+        value = _value + value2;
     }
 
-    function initialize() initializeOnceOnly public {
+    function initialize() /*initializeOnceOnly*/ public {
         value2 = 100;
     }
 }

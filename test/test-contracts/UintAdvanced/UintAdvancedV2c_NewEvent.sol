@@ -1,9 +1,7 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintAdvancedV2c_NewEventSafe is UpgradeablePlus {
+contract UintAdvancedV2c_NewEvent{
     uint value;
     event EventSetValue(uint newValue, uint oldValue);
 

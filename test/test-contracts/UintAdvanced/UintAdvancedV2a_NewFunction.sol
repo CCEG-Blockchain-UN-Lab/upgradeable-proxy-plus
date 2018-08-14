@@ -1,9 +1,7 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintAdvancedV2a_NewFunctionSafe is UpgradeablePlus {
+contract UintAdvancedV2a_NewFunction {
     uint value;
 
     function getValue() view public returns (uint) {

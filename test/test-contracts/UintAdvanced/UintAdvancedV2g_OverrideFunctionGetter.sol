@@ -1,16 +1,14 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintAdvancedV2h_OverrideFunctionSetterSafe is UpgradeablePlus {
+contract UintAdvancedV2g_OverrideFunctionGetter{
     uint value;
 
     function getValue() view public returns (uint) {
-        return value;
+        return value+2;
     }
 
     function setValue(uint _value) public {
-        value = _value+2;
+        value = _value;
     }
 }
