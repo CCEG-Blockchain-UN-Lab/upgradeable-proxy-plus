@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UintFallbackV2Safe is UpgradeablePlus {
+contract UintFallbackV2{
     uint value;
 
     function getValue() view public returns (uint) {

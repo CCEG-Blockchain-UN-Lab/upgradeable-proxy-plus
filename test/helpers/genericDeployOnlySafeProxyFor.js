@@ -1,7 +1,7 @@
 module.exports = async (proxyName, contractInstanceToProxy) => {
   const Proxy = artifacts.require(proxyName);
   let proxy = await Proxy.new();
-  proxy.upgradeTo(contractInstanceToProxy.address);
+  await proxy.upgradeTo(contractInstanceToProxy.address);
   let proxiedContractInstance = contractInstanceToProxy.constructor.at(
     proxy.address
   );

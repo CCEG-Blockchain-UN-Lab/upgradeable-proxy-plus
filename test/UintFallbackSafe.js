@@ -1,12 +1,11 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const UintFallbackV1 = artifacts.require("UintFallbackV1Safe");
-const UintFallbackV2 = artifacts.require("UintFallbackV2Safe");
-const UintFallbackV3 = artifacts.require("UintFallbackV3Safe");
-const UintFallbackV4 = artifacts.require("UintFallbackV4Safe");
+const deployOnlySafeProxyFor = require("./helpers/deployOnlySafeProxyFor");
+const UintFallbackV1 = artifacts.require("UintFallbackV1");
+const UintFallbackV2 = artifacts.require("UintFallbackV2");
+const UintFallbackV3 = artifacts.require("UintFallbackV3");
+const UintFallbackV4 = artifacts.require("UintFallbackV4");
 
-contract("UintFallbackSafe", function(accounts) {
+contract("UintFallback", function(accounts) {
   let uintFallbackV1,
     uintFallbackV2,
     uintFallbackV3,
@@ -18,16 +17,11 @@ contract("UintFallbackSafe", function(accounts) {
       UintFallbackV2.new(),
       UintFallbackV3.new(),
       UintFallbackV4.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          UintFallbackV1
-        ).then(async cnp => {
-          uintFallbackbyProxy = cnp.proxied;
-          uintFallbackV1 = cnp.contract;
-          await uintFallbackbyProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(UintFallbackV1).then(async cnp => {
+        uintFallbackbyProxy = cnp.proxied;
+        uintFallbackV1 = cnp.contract;
+        this.proxy = cnp.proxy;
+        // await uintFallbackbyProxy.initialize();
       })
     ]);
     uintFallbackV2 = result[0];
@@ -44,8 +38,8 @@ contract("UintFallbackSafe", function(accounts) {
     let value = await uintFallbackbyProxy.getValue.call();
     assert.equal(value.toNumber(), 10, "The value should be 10");
 
-    await uintFallbackbyProxy.upgradeTo(uintFallbackV2.address);
-    await uintFallbackbyProxy.initialize();
+    await this.proxy.upgradeTo(uintFallbackV2.address);
+    // await uintFallbackbyProxy.initialize();
 
     value = await uintFallbackbyProxy.getValue.call();
     assert.equal(value.toNumber(), 10, "The value should be 10");
@@ -68,8 +62,8 @@ contract("UintFallbackSafe", function(accounts) {
     let value = await uintFallbackbyProxy.getValue.call();
     assert.equal(value.toNumber(), 10, "The value should be 10");
 
-    await uintFallbackbyProxy.upgradeTo(uintFallbackV3.address);
-    await uintFallbackbyProxy.initialize();
+    await this.proxy.upgradeTo(uintFallbackV3.address);
+    // await uintFallbackbyProxy.initialize();
 
     value = await uintFallbackbyProxy.getValue.call();
     assert.equal(value.toNumber(), 10, "The value should be 10");
@@ -108,10 +102,10 @@ contract("UintFallbackSafe", function(accounts) {
   });
 
   it("should be able to pay a payable upgradeable contract's fallback function", async function() {
-    let pi = await deployOnlyProxyFor(uintFallbackV4);
+    let pi = await deployOnlySafeProxyFor(uintFallbackV4);
     let proxy = pi.proxy;
     uintFallbackbyProxy = UintFallbackV1.at(proxy.address);
-    await uintFallbackbyProxy.initialize();
+    // await uintFallbackbyProxy.initialize();
 
     await web3.eth.sendTransaction({
       to: uintFallbackbyProxy.address,
@@ -123,12 +117,12 @@ contract("UintFallbackSafe", function(accounts) {
   });
 
   it("should not be able to pay a non-payable upgradeable contract's fallback function after upgraded from a payable one", async function() {
-    let pi = await deployOnlyProxyFor(uintFallbackV4);
+    let pi = await deployOnlySafeProxyFor(uintFallbackV4);
     let proxy = pi.proxy;
     uintFallbackbyProxy = UintFallbackV1.at(proxy.address);
-    await uintFallbackbyProxy.initialize();
+    // await uintFallbackbyProxy.initialize();
 
-    await uintFallbackbyProxy.upgradeTo(uintFallbackV1.address);
+    await proxy.upgradeTo(uintFallbackV1.address);
 
     try {
       await web3.eth.sendTransaction({
@@ -146,9 +140,9 @@ contract("UintFallbackSafe", function(accounts) {
     }
   });
 
-  it("should be able to pay a payable upgradeable contract's fallback function after upgraded from a non-payable one", async function() {
-    await uintFallbackbyProxy.upgradeTo(uintFallbackV4.address);
-    await uintFallbackbyProxy.initialize();
+  it.only("should be able to pay a payable upgradeable contract's fallback function after upgraded from a non-payable one", async function() {
+    await this.proxy.upgradeTo(uintFallbackV4.address);
+    // await uintFallbackbyProxy.initialize();
 
     await web3.eth.sendTransaction({
       to: uintFallbackbyProxy.address,
