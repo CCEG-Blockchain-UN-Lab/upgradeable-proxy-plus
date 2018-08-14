@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract StringSimpleV2Safe is UpgradeablePlus {
+contract StringSimpleV1 {
     string value;
 
     function getValue() view public returns (string) {
@@ -10,6 +8,6 @@ contract StringSimpleV2Safe is UpgradeablePlus {
     }
 
     function setValue(string _value) public {
-        value = "I am a really really really happy string";
+        value = _value;
     }
 }
