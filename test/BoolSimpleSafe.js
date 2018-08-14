@@ -17,7 +17,7 @@ contract("BoolSimple", function(accounts) {
     boolSimpleV2 = result[0];
   });
 
-  it.only("should be able to upgrade to new bool function", async function() {
+  it("should be able to upgrade to new bool function", async function() {
     await this.proxied.setValue(true);
     let value = await this.proxied.getValue.call();
     assert.equal(value, true, "Not equal to true");
