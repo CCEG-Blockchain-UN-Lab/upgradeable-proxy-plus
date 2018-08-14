@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract ChangeType_StringSafe is UpgradeablePlus {
+contract ChangeType_String {
     string value;
 
     function getValue() view public returns (string) {

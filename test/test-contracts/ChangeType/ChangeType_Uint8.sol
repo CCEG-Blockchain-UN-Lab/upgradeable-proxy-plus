@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract ChangeType_Uint8Safe is UpgradeablePlus {
+contract ChangeType_Uint8 {
     uint8 value;
 
     function getValue() view public returns (uint8) {

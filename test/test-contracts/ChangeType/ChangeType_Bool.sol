@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract ChangeType_BoolSafe is UpgradeablePlus {
+contract ChangeType_Bool {
     bool value;
 
     function getValue() view public returns (bool) {

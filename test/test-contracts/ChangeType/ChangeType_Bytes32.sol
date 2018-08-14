@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract ChangeType_Bytes32Safe is UpgradeablePlus {
+contract ChangeType_Bytes32{
     bytes32 value;
 
     function getValue() view public returns (bytes32) {
