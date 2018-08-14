@@ -140,7 +140,7 @@ contract("UintFallback", function(accounts) {
     }
   });
 
-  it.only("should be able to pay a payable upgradeable contract's fallback function after upgraded from a non-payable one", async function() {
+  it("should be able to pay a payable upgradeable contract's fallback function after upgraded from a non-payable one", async function() {
     await this.proxy.upgradeTo(uintFallbackV4.address);
     // await uintFallbackbyProxy.initialize();
 
