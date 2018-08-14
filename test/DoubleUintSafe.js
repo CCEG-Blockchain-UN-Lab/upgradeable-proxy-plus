@@ -23,7 +23,7 @@ contract("DoubleUint", function(accounts) {
     doubleUintV2a_NewStorage = result[0];
   });
 
-  it.only("should upgrade the contract DoubleUint to version 2 with variables in reverse order", async function() {
+  it("should upgrade the contract DoubleUint to version 2 with variables in reverse order", async function() {
     console.log(
       INDENT,
       "Note that smart contract upgrade to DoubleUintV2a_NewStorage fails!!!"
