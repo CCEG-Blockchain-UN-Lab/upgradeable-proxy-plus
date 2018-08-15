@@ -4,6 +4,7 @@ migrations/
 .idea/
 build/
 contracts/Migrations.sol
+contracts/TruffleImporter.sol
 .gitignore
 .npmignore
 package.json
