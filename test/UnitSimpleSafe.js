@@ -1,12 +1,10 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
-const UintSimpleV1 = artifacts.require("UintSimpleV1Safe");
-const UintSimpleV2 = artifacts.require("UintSimpleV2Safe");
+const UintSimpleV1 = artifacts.require("UintSimpleV1");
+const UintSimpleV2 = artifacts.require("UintSimpleV2");
 
 const INDENT = "      ";
 
-contract("UintSimpleSafe", function(accounts) {
+contract("UintSimple", function(accounts) {
   let uintSimpleV1, uintSimpleV2, uintSimpleV1byProxy;
 
   const inputValue = 10;
@@ -14,16 +12,11 @@ contract("UintSimpleSafe", function(accounts) {
   beforeEach(async function() {
     let result = await Promise.all([
       UintSimpleV2.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          UintSimpleV1
-        ).then(async cnp => {
-          uintSimpleV1byProxy = cnp.proxied;
-          uintSimpleV1 = cnp.contract;
-          await uintSimpleV1byProxy.initialize();
-        });
+      deployContractAndSafeProxyFor(UintSimpleV1).then(async cnp => {
+        uintSimpleV1byProxy = cnp.proxied;
+        uintSimpleV1 = cnp.contract;
+        this.proxy = cnp.proxy;
+        // await uintSimpleV1byProxy.initialize();
       })
     ]);
     uintSimpleV2 = result[0];
@@ -35,8 +28,8 @@ contract("UintSimpleSafe", function(accounts) {
     let value = bigNumValue.toNumber();
     assert.equal(inputValue, value, "The two values should be the same");
 
-    await uintSimpleV1byProxy.upgradeTo(uintSimpleV2.address);
-    await uintSimpleV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintSimpleV2.address);
+    // await uintSimpleV1byProxy.initialize();
 
     bigNumValue = await uintSimpleV1byProxy.getValue.call();
     value = bigNumValue.toNumber();
@@ -53,22 +46,18 @@ contract("UintSimpleSafe", function(accounts) {
   });
 
   it("should emit EventUpgrade on upgrade", async function() {
-    let tx = await uintSimpleV1byProxy.upgradeTo(uintSimpleV2.address);
-    await uintSimpleV1byProxy.initialize();
+    let tx = await this.proxy.upgradeTo(uintSimpleV2.address);
+    // await uintSimpleV1byProxy.initialize();
 
     let upgradeLog = tx.logs[0];
+    assert.equal(upgradeLog.event, "Upgraded", "First log should be Upgraded");
     assert.equal(
-      upgradeLog.event,
-      "EventUpgrade",
-      "First log should be EventUpgrade"
-    );
-    assert.equal(
-      upgradeLog.args.oldTarget,
+      upgradeLog.args.oldImplementation,
       uintSimpleV1.address,
       "The old target should be the deployed UintSimpleV1 address"
     );
     assert.equal(
-      upgradeLog.args.newTarget,
+      upgradeLog.args.newImplementation,
       uintSimpleV2.address,
       "The new target should be the deployed UintSimpleV2 address"
     );
@@ -86,8 +75,8 @@ contract("UintSimpleSafe", function(accounts) {
     tx = await uintSimpleV1byProxy.setValue(inputValue);
     gasCosts[1] = tx.receipt.gasUsed;
 
-    await uintSimpleV1byProxy.upgradeTo(uintSimpleV2.address);
-    await uintSimpleV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintSimpleV2.address);
+    // await uintSimpleV1byProxy.initialize();
 
     tx = await uintSimpleV2.setValue(inputValue);
     gasCosts[2] = tx.receipt.gasUsed;
