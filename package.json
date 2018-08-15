@@ -1,6 +1,6 @@
 {
   "name": "unstructured-upgradeable-proxy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Smart contracts upgradeability through unstructured storage pattern",
   "main": "truffle.js",
   "directories": {
@@ -19,7 +19,8 @@
   },
   "keywords": [
     "upgradeable",
-    "smart contracts"
+    "smart contracts",
+    "unstructured storage"
   ],
   "author": "ProphetDaniel",
   "license": "MIT",

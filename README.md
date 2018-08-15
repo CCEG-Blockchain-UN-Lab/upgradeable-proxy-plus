@@ -63,5 +63,5 @@ The full example was written inside migrations and is fully functional [here](ht
 ### How to import these library contracts?
 Use the following strategy to import library contracts to your own contracts
 ```javascript
-import "upgradeable-proxy-plus/contracts/UpgradeablePlus.sol";
+import "unstructured-upgradeable-proxy/contracts/OwnedUpgradeabilityProxy.sol";
 ```
