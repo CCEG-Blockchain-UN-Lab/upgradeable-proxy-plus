@@ -45,7 +45,6 @@ Get the instance of the AddressSimpleV1 by proxy, and initialize.
     let addressSimpleV2 = await deployer.deploy(AddressSimpleV2);
 
     await proxy.upgradeTo(addressSimpleV2.address);
-    // await addressSimpleV1byProxy.initialize();
     value = await addressSimpleV1byProxy.getValue.call();
     assert.equal(value, inputValue, "Not equal to inputValue");
 
