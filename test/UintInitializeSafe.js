@@ -1,7 +1,6 @@
-const Web3 = require("web3");
-const web3 = new Web3(null);
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
 const deployOnlySafeProxyFor = require("./helpers/deployOnlySafeProxyFor");
+const encodeWithSignature = require("./helpers/encodeWithSignature");
 const UintInitializeV1a_NotInitialized = artifacts.require(
   "UintInitializeV1a_NotInitialized"
 );
@@ -12,22 +11,6 @@ const UintInitializeV2 = artifacts.require("UintInitializeV2");
 const UintInitializeV3 = artifacts.require("UintInitializeV3");
 
 const INDENT = "      ";
-
-function encodeWithSignature(functionSignature, ...arg) {
-  function getArgTypeArray(functionSignature) {
-    let argsString = functionSignature.slice(
-      functionSignature.indexOf("(") + 1,
-      functionSignature.indexOf(")")
-    );
-    return argsString.split(",");
-  }
-  return (
-    web3.eth.abi.encodeFunctionSignature(functionSignature) +
-    web3.eth.abi
-      .encodeParameters(getArgTypeArray(functionSignature), arg)
-      .substring(2)
-  );
-}
 
 contract("UintInitialize", function(accounts) {
   let uintInitializeV1a_NotInitialized,
@@ -68,7 +51,7 @@ contract("UintInitialize", function(accounts) {
   it("should be initialize if the variable is set in initialize()", async function() {
     let pi = await deployOnlySafeProxyFor(
       uintInitializeV1b_Initialized,
-      web3.utils.keccak256("initialize()")
+      encodeWithSignature("initialize()")
     );
     uintInitializebyProxy = pi.proxied;
 
@@ -80,7 +63,7 @@ contract("UintInitialize", function(accounts) {
   it("should initialize value on upgradeToAndCall", async function() {
     await this.proxy.upgradeToAndCall(
       uintInitializeV1b_Initialized.address,
-      web3.eth.abi.encodeFunctionSignature("initialize()")
+      encodeWithSignature("initialize()")
     );
 
     let value = await uintInitializebyProxy.getValue.call();
@@ -102,7 +85,7 @@ contract("UintInitialize", function(accounts) {
   // it.only("should emmit EventInitialized when calling initialize()", async function() {
   //   let pi = await deployOnlySafeProxyFor(
   //     uintInitializeV1a_NotInitialized,
-  //     web3.utils.keccak256("initialize()")
+  //     encodeWithSignature("initialize()")
   //   );
   //   let proxy = pi.proxy;
   //   uintInitializebyProxy = pi.proxied;
@@ -121,7 +104,7 @@ contract("UintInitialize", function(accounts) {
   //
   //   await proxy.upgradeToAndCall(
   //     uintInitializeV1b_Initialized.address,
-  //     web3.utils.keccak256("initialize()")
+  //     encodeWithSignature("initialize()")
   //   );
   //   events = initializationTx.logs;
   //   assert.equal(

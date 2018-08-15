@@ -55,7 +55,7 @@ contract("UintFallback", function(accounts) {
 
   it("should be able to send upgrade the contract's fallback function to revert", async function() {
     await web3.eth.sendTransaction({
-      to: uintFallbackbyProxy.address,
+      to: this.proxy.address,
       from: accounts[0],
       value: 0
     });

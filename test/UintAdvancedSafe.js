@@ -1,5 +1,4 @@
-const Web3 = require("web3");
-const web3 = new Web3(null);
+const encodeWithSignature = require("./helpers/encodeWithSignature");
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
 const deployOnlySafeProxyFor = require("./helpers/deployOnlySafeProxyFor");
 const UintAdvancedV1 = artifacts.require("UintAdvancedV1");
@@ -293,7 +292,7 @@ contract("UintAdvanced", function(accounts) {
 
       await proxy.upgradeToAndCall(
         uintAdvancedV2b_NewStorage.address,
-        web3.utils.keccak256("initialize()")
+        encodeWithSignature("initialize()")
       );
 
       let bigNumValue = await uintAdvancedV1byProxy.getValue.call();
@@ -319,7 +318,7 @@ contract("UintAdvanced", function(accounts) {
 
       await proxy.upgradeToAndCall(
         uintAdvancedV2e_NewStorage.address,
-        web3.utils.keccak256("initialize()")
+        encodeWithSignature("initialize()")
       );
 
       let bigNumValue = await uintAdvancedV1byProxy.getValue.call();

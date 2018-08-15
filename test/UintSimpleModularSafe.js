@@ -99,7 +99,7 @@ contract("UintSimpleModular", function(accounts) {
     );
   });
 
-  it.only("should determine the differece in gas cost for regular vs. upgradeable contract call", async function() {
+  it("should determine the differece in gas cost for regular vs. upgradeable contract call", async function() {
     let gasCosts = [];
     let tx = await uintSimpleModularV1.setValue(inputValue);
     gasCosts[0] = tx.receipt.gasUsed;
