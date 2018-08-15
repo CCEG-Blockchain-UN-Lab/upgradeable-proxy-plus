@@ -1,8 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
-
-contract UpgradeCheck_CanUpgrade is UpgradeablePlus {
+contract UpgradeCheck_CanUpgrade {
     uint value;
 
     function getValue() view public returns (uint) {
