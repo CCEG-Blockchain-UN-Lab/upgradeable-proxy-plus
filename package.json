@@ -1,15 +1,15 @@
 {
   "name": "unstructured-upgradeable-proxy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Smart contracts upgradeability through unstructured storage pattern",
   "main": "truffle.js",
   "directories": {
     "test": "test"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "web3-eth-abi": "^1.0.0-beta.35"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "truffle test"
   },
