@@ -1,8 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "../../../contracts/UpgradeablePlus.sol";
 
-contract UintOwnableV2 is UpgradeablePlus {
+contract UintOwnableV2 {
     uint value;
 
     function getValue() view public returns (uint) {

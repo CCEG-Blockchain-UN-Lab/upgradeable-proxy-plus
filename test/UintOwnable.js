@@ -1,6 +1,4 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
 const UintOwnableV1 = artifacts.require("UintOwnableV1");
 const UintOwnableV2 = artifacts.require("UintOwnableV2");
 
@@ -12,21 +10,10 @@ contract("UintOwnable", function(accounts) {
   beforeEach(async function() {
     let result = await Promise.all([
       UintOwnableV2.new(),
-      // deployOwnableContractAndProxyFor(UintOwnableV1).then(async cnp => {
-      //   uintOwnableV1 = cnp.contract;
-      //   uintOwnableV1byProxy = cnp.proxied;
-      //   await uintOwnableV1byProxy.initialize();
-      // })
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          UintOwnableV1
-        ).then(async cnp => {
-          uintOwnableV1 = cnp.contract;
-          uintOwnableV1byProxy = cnp.proxied;
-          await uintOwnableV1byProxy.initialize();
-        });
+      await deployContractAndSafeProxyFor(UintOwnableV1).then(async cnp => {
+        uintOwnableV1 = cnp.contract;
+        uintOwnableV1byProxy = cnp.proxied;
+        this.proxy = cnp.proxy;
       })
     ]);
     uintOwnableV2 = result[0];
@@ -38,8 +25,8 @@ contract("UintOwnable", function(accounts) {
     let value = bigNumValue.toNumber();
     assert.equal(inputValue, value, "The two values should be the same");
 
-    await uintOwnableV1byProxy.upgradeTo(uintOwnableV2.address);
-    await uintOwnableV1byProxy.initialize();
+    await this.proxy.upgradeTo(uintOwnableV2.address);
+    // await uintOwnableV1byProxy.initialize();
 
     bigNumValue = await uintOwnableV1byProxy.getValue.call();
     value = bigNumValue.toNumber();
@@ -56,22 +43,18 @@ contract("UintOwnable", function(accounts) {
   });
 
   it("should emit EventUpgrade on upgrade", async function() {
-    let tx = await uintOwnableV1byProxy.upgradeTo(uintOwnableV2.address);
-    await uintOwnableV1byProxy.initialize();
+    let tx = await this.proxy.upgradeTo(uintOwnableV2.address);
+    // await uintOwnableV1byProxy.initialize();
 
     let upgradeLog = tx.logs[0];
+    assert.equal(upgradeLog.event, "Upgraded", "First log should be Upgraded");
     assert.equal(
-      upgradeLog.event,
-      "EventUpgrade",
-      "First log should be EventUpgrade"
-    );
-    assert.equal(
-      upgradeLog.args.oldTarget,
+      upgradeLog.args.oldImplementation,
       uintOwnableV1.address,
       "The old target should be the deployed UintOwnableV1 address"
     );
     assert.equal(
-      upgradeLog.args.newTarget,
+      upgradeLog.args.newImplementation,
       uintOwnableV2.address,
       "The new target should be the deployed UintOwnableV2 address"
     );
@@ -83,20 +66,20 @@ contract("UintOwnable", function(accounts) {
   });
 
   it("should fail to upgrade the contract if upgradeTo() is not called by the proxy owner", async function() {
-    let ownerAddress = await uintOwnableV1byProxy.owner.call();
+    let ownerAddress = await this.proxy.proxyOwner.call();
     assert.equal(
       ownerAddress,
       accounts[0],
       "The owner of the proxy should be accounts[0]"
     );
 
-    await uintOwnableV1byProxy.upgradeTo(uintOwnableV2.address, {
+    await this.proxy.upgradeTo(uintOwnableV2.address, {
       from: accounts[0]
     });
-    await uintOwnableV1byProxy.initialize();
+    // await uintOwnableV1byProxy.initialize();
 
     try {
-      await uintOwnableV1byProxy.upgradeTo(uintOwnableV1.address, {
+      await this.proxy.upgradeTo(uintOwnableV1.address, {
         from: accounts[1]
       });
       throw new Error("This error should not happen");
@@ -110,28 +93,28 @@ contract("UintOwnable", function(accounts) {
   });
 
   it("should by able to transfer ownership so that account[1] can call upgradeTo()", async function() {
-    let ownerAddress = await uintOwnableV1byProxy.owner.call();
+    let ownerAddress = await this.proxy.proxyOwner.call();
     assert.equal(
       ownerAddress,
       accounts[0],
       "The owner of the proxy should be accounts[0]"
     );
 
-    await uintOwnableV1byProxy.transferOwnership(accounts[1]);
-    ownerAddress = await uintOwnableV1byProxy.owner.call();
+    await this.proxy.transferProxyOwnership(accounts[1]);
+    ownerAddress = await this.proxy.proxyOwner.call();
     assert.equal(
       ownerAddress,
       accounts[1],
       "The owner of the proxy should now be accounts[1]"
     );
 
-    await uintOwnableV1byProxy.upgradeTo(uintOwnableV2.address, {
+    await this.proxy.upgradeTo(uintOwnableV2.address, {
       from: accounts[1]
     });
-    await uintOwnableV1byProxy.initialize();
+    // await uintOwnableV1byProxy.initialize();
 
     try {
-      await uintOwnableV1byProxy.upgradeTo(uintOwnableV1.address, {
+      await this.proxy.upgradeTo(uintOwnableV1.address, {
         from: accounts[0]
       });
       throw new Error("This error should not happen");
