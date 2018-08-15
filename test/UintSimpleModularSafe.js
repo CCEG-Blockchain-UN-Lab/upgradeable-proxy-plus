@@ -1,16 +1,14 @@
 const deployContractAndSafeProxyFor = require("./helpers/deployContractAndSafeProxyFor");
-const deployOnlyProxyFor = require("./helpers/deployOnlyProxyFor");
-const CheckContract = artifacts.require("CheckContract");
 const UintSimpleModularV1_Logic = artifacts.require(
-  "UintSimpleModularV1_LogicSafe"
+  "UintSimpleModularV1_Logic"
 );
 const UintSimpleModularV2_Logic = artifacts.require(
-  "UintSimpleModularV2_LogicSafe"
+  "UintSimpleModularV2_Logic"
 );
 
 const INDENT = "      ";
 
-contract("UintSimpleModularSafe", function(accounts) {
+contract("UintSimpleModular", function(accounts) {
   let uintSimpleModularV1, uintSimpleModularV2, uintSimpleModular_byProxy;
 
   const inputValue = 10;
@@ -18,17 +16,14 @@ contract("UintSimpleModularSafe", function(accounts) {
   beforeEach(async function() {
     let result = await Promise.all([
       UintSimpleModularV2_Logic.new(),
-      deployOnlyProxyFor(await CheckContract.deployed()).then(async ci => {
-        let checkContractInstanceByProxyAddress = ci.proxied.address;
-        await deployContractAndSafeProxyFor(
-          checkContractInstanceByProxyAddress,
-          UintSimpleModularV1_Logic
-        ).then(async cnp => {
+      await deployContractAndSafeProxyFor(UintSimpleModularV1_Logic).then(
+        async cnp => {
           uintSimpleModular_byProxy = cnp.proxied;
           uintSimpleModularV1 = cnp.contract;
-          await uintSimpleModular_byProxy.initialize();
-        });
-      })
+          this.proxy = cnp.proxy;
+          // await uintSimpleModular_byProxy.initialize();
+        }
+      )
     ]);
     uintSimpleModularV2 = result[0];
   });
@@ -64,8 +59,8 @@ contract("UintSimpleModularSafe", function(accounts) {
     let value = bigNumValue.toNumber();
     assert.equal(inputValue, value, "The two values should be the same");
 
-    await uintSimpleModular_byProxy.upgradeTo(uintSimpleModularV2.address);
-    await uintSimpleModular_byProxy.initialize();
+    await this.proxy.upgradeTo(uintSimpleModularV2.address);
+    // await uintSimpleModular_byProxy.initialize();
 
     bigNumValue = await uintSimpleModular_byProxy.getValue.call();
     value = bigNumValue.toNumber();
@@ -82,24 +77,18 @@ contract("UintSimpleModularSafe", function(accounts) {
   });
 
   it("should emit EventUpgrade on upgrade", async function() {
-    let tx = await uintSimpleModular_byProxy.upgradeTo(
-      uintSimpleModularV2.address
-    );
-    await uintSimpleModular_byProxy.initialize();
+    let tx = await this.proxy.upgradeTo(uintSimpleModularV2.address);
+    // await uintSimpleModular_byProxy.initialize();
 
     let upgradeLog = tx.logs[0];
+    assert.equal(upgradeLog.event, "Upgraded", "First log should be Upgraded");
     assert.equal(
-      upgradeLog.event,
-      "EventUpgrade",
-      "First log should be EventUpgrade"
-    );
-    assert.equal(
-      upgradeLog.args.oldTarget,
+      upgradeLog.args.oldImplementation,
       uintSimpleModularV1.address,
       "The old target should be the deployed UintSimpleModularV1_Logic address"
     );
     assert.equal(
-      upgradeLog.args.newTarget,
+      upgradeLog.args.newImplementation,
       uintSimpleModularV2.address,
       "The new target should be the deployed UintSimpleModularV2_Logic address"
     );
@@ -110,15 +99,15 @@ contract("UintSimpleModularSafe", function(accounts) {
     );
   });
 
-  it("should determine the differece in gas cost for regular vs. upgradeable contract call", async function() {
+  it.only("should determine the differece in gas cost for regular vs. upgradeable contract call", async function() {
     let gasCosts = [];
     let tx = await uintSimpleModularV1.setValue(inputValue);
     gasCosts[0] = tx.receipt.gasUsed;
     tx = await uintSimpleModular_byProxy.setValue(inputValue);
     gasCosts[1] = tx.receipt.gasUsed;
 
-    await uintSimpleModular_byProxy.upgradeTo(uintSimpleModularV2.address);
-    await uintSimpleModular_byProxy.initialize();
+    await this.proxy.upgradeTo(uintSimpleModularV2.address);
+    // await uintSimpleModular_byProxy.initialize();
 
     tx = await uintSimpleModularV2.setValue(inputValue);
     gasCosts[2] = tx.receipt.gasUsed;
