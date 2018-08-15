@@ -1,6 +1,6 @@
 {
   "name": "unstructured-upgradeable-proxy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Smart contracts upgradeability through unstructured storage pattern",
   "main": "truffle.js",
   "directories": {
@@ -27,5 +27,5 @@
   "bugs": {
     "url": "https://github.com/CCEG-Blockchain-UN-Lab/upgradeable-proxy-plus/issues"
   },
-  "homepage": "https://github.com/CCEG-Blockchain-UN-Lab/upgradeable-proxy-plus#readme"
+  "homepage": "https://github.com/CCEG-Blockchain-UN-Lab/upgradeable-proxy-plus/tree/unstructured_storage"
 }
