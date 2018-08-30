@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 
-import "upgradeable-proxy/contracts/ownable/Ownable.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /*
  * @title SafeProxied v0.1
