@@ -9,7 +9,7 @@ contract UintOwnableV2 is UpgradeablePlus {
         return value;
     }
 
-    function setValue(uint _value) public {
+    function setValue(uint _value) public onlyOwner{
         value = 2*_value;
     }
 }

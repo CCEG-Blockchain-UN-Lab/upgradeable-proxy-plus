@@ -5,11 +5,11 @@ import "../../../contracts/UpgradeablePlus.sol";
 contract UintOwnableV1 is UpgradeablePlus {
     uint value;
 
-    function getValue() view public returns (uint) {
+    function getValue() view public returns (uint){
         return value;
     }
 
-    function setValue(uint _value) public {
+    function setValue(uint _value) public onlyOwner{
         value = _value;
     }
 }
